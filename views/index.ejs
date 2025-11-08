@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Store - Library</title>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[oklch(0.97_0.01_70)] text-slate-900 min-h-screen flex flex-col items-center">
+  <!-- Navigation Bar -->
+  <%- include('partials/navbar') %>
+
+
+  <div class="container mx-auto p-6 w-full max-w-5xl">
+    <header class="mb-10 flex items-center justify-between">
+      <div>
+        <p class="text-2xl font-bold text-[oklch(0.30_0.08_140)] hover:text-teal-800 transition opacity-80">
+          Welcome to our library :)
+        </p>
+        <p class="text-2xl font-bold text-[oklch(0.30_0.08_140)] hover:text-teal-800 transition opacity-80">
+          explore our collection of Books
+        </p>
+      </div>
+      <a
+        href="categories"
+        class="flex items-center gap-2 bg-[oklch(0.30_0.08_140)] text-white px-8 py-2 rounded-lg shadow hover:bg-teal-700 transition opacity-80"
+      >
+      <i data-lucide="filter" class="w-5 h-5"></i>
+
+        Filter
+      </a>
+    </header>
+  
+
+
+    <% if (books && books.length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% books.forEach(book => { %>
+              <a href="/books/<%= book.id %>" 
+                class="block bg-white p-6 rounded-xl shadow hover:shadow-lg transition border border-gray-200 hover:-translate-y-1 transform">
+               <div class="flex flex-col items-center text-center">
+                 <i data-lucide="book-open" class="w-12 h-12 my-4 text-[oklch(0.30_0.08_140)] opacity-50"></i>
+                 <div class="text-lg font-semibold mb-2 text-[oklch(0.25_0.8_140)]"><%= book.title %></div>
+               </div>
+               <div class="text-sm text-gray-600 text-center">
+                 <span class="font-medium text-slate-800 opacity-70"><%= book.author_name %></span><br>
+                  <span class="font-medium text-slate-800 opacity-60"><%= book.publisher_name %></span>
+               </div>
+             </a>
+            <% }) %>
+          </div>
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+          </script>
+          
+    <% } else { %>
+      <div class="text-center mt-20 text-gray-500">
+        <!-- fallback svg -->
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        lucide.createIcons();
+      } else {
+        console.error("Lucide failed to load — check network or CSP.");
+      }
+    });
+  </script>
+</body>
+</html>

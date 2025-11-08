@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Store - Authors</title>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[oklch(0.97_0.01_70)] text-slate-900 min-h-screen flex flex-col items-center">
+  <!-- Navigation Bar -->
+  <%- include('partials/navbar') %>
+
+
+  <div class="container mx-auto p-6 w-full max-w-5xl">
+    <header class=" mb-10">
+      <p class="text-2xl font-bold text-[oklch(0.30_0.08_140)] hover:text-teal-800 transition opacity-80">        Authors:
+      </p> 
+   </header>
+
+
+
+    <% if (authors && authors.length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% authors.forEach(author => { %>
+              <a href="/authors/<%= author.id %>" 
+                class="block bg-white p-6 rounded-xl shadow hover:shadow-lg transition border border-gray-200 hover:-translate-y-1 transform">
+               <div class="flex flex-col items-center text-center">
+                 <i data-lucide="user" class="w-12 h-12 my-4 text-[oklch(0.30_0.08_140)] opacity-70"></i>
+                 <div class="text-lg font-semibold mb-2 text-[oklch(0.30_0.8_140)]"><%= author.name %></div>
+               </div>
+               <div class="text-sm text-gray-600 text-center">
+                 <% if (author.bio) { %>
+                   <span class="font-medium text-slate-800 opacity-70 line-clamp-2"><%= author.bio %></span>
+                 <% } else { %>
+                   <span class="font-medium text-slate-800 opacity-60">No bio available</span>
+                 <% } %>
+               </div>
+             </a>
+            <% }) %>
+          </div>
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+          </script>
+          
+    <% } else { %>
+      <div class="text-center mt-20 text-gray-500">
+        <!-- fallback svg -->
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        lucide.createIcons();
+      } else {
+        console.error("Lucide failed to load — check network or CSP.");
+      }
+    });
+  </script>
+</body>
+</html>
+

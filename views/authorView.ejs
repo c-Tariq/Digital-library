@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= author.name %> - Author Details</title>
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-[oklch(0.97_0.01_70)] text-slate-900 min-h-screen flex flex-col items-center">
+  
+  <%- include('partials/navbar') %>
+
+  <main class="container mx-auto p-6 w-full max-w-3xl mt-10">
+    <div class="bg-white p-8 rounded-2xl shadow border border-gray-200">
+        <a href="/authors" 
+        class="  text-teal-700 hover:text-teal-800 transition">
+       <i data-lucide="arrow-left" class="w-6 h-6"></i>
+     </a>
+      <div class="flex flex-col items-center text-center">
+        <i data-lucide="user" class="w-16 h-16 mb-6 text-[oklch(0.30_0.08_140)]"></i>
+        <h1 class="text-3xl font-bold text-[oklch(0.30_0.8_140)] mb-2"><%= author.name %></h1>
+      </div>
+
+      <div class="text-gray-700 text-base leading-relaxed text-center mb-8">
+        <p><%= author.bio || "No biography available for this author." %></p>
+      </div>
+
+    </div>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+  </script>
+</body>
+</html>
+
