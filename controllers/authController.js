@@ -8,12 +8,45 @@ const {
 const { BadRequestError, NotFoundError } = require("../utils/customErrors");
 const asyncHandler = require("../utils/asyncHandler");
 
+// Validate password strength
+function validatePasswordStrength(password) {
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push("Password must be at least 8 characters long");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push("Password must contain at least one lowercase letter");
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push("Password must contain at least one number");
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    errors.push("Password must contain at least one special character");
+  }
+
+  return errors;
+}
+
 // Register new user
 async function register(req, res) {
   const { username, email, password, role_name } = req.body;
 
   if (!username || !email || !password) {
     throw new BadRequestError("Username, email, and password are required");
+  }
+
+  // Validate password strength
+  const passwordErrors = validatePasswordStrength(password);
+  if (passwordErrors.length > 0) {
+    throw new BadRequestError(passwordErrors.join(". "));
   }
 
   // Check if user exists
@@ -27,20 +60,16 @@ async function register(req, res) {
     throw new BadRequestError("Email already exists");
   }
 
-  // Get role (default to 'viewer' if not provided)
   const roleName = role_name || "viewer";
   const role = await db.getRoleByName(roleName);
   if (!role) {
     throw new NotFoundError(`Role '${roleName}' not found`);
   }
 
-  // Hash password
   const passwordHash = await hashPassword(password);
 
-  // Create user
   const user = await db.createUser(username, email, passwordHash, role.id);
 
-  // Generate token
   const token = generateToken({
     id: user.id,
     username: user.username,
@@ -60,7 +89,6 @@ async function register(req, res) {
   });
 }
 
-// Login
 async function login(req, res) {
   const { username, password } = req.body;
 
@@ -68,13 +96,11 @@ async function login(req, res) {
     throw new BadRequestError("Username and password are required");
   }
 
-  // Get user
   const user = await db.getUserByUsername(username);
   if (!user) {
     throw new NotFoundError("Invalid credentials");
   }
 
-  // Verify password
   const isValidPassword = await comparePassword(password, user.password_hash);
   if (!isValidPassword) {
     throw new BadRequestError("Invalid credentials");
@@ -112,8 +138,20 @@ async function getMe(req, res) {
   });
 }
 
+// Render login page
+function renderLogin(req, res) {
+  res.render("login");
+}
+
+// Render register page
+function renderRegister(req, res) {
+  res.render("register");
+}
+
 module.exports = {
   register,
   login,
   getMe,
+  renderLogin,
+  renderRegister,
 };

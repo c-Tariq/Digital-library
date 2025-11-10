@@ -15,12 +15,12 @@
   <main class="container mx-auto p-6 w-full max-w-3xl mt-10">
     <div class="bg-white p-8 rounded-2xl shadow border border-gray-200">
         <a href="/books" 
-        class="  text-teal-700 hover:text-teal-800 transition">
+        class="  text-[oklch(0.30_0.08_140)] hover:text-teal-800 transition">
        <i data-lucide="arrow-left" class="w-6 h-6"></i>
      </a>
       <div class="flex flex-col items-center text-center">
-        <i data-lucide="book-open" class="w-16 h-16 mb-6 text-teal-700"></i>
-        <h1 class="text-3xl font-bold text-teal-700 mb-2"><%= book.title %></h1>
+        <i data-lucide="book-open" class="w-16 h-16 mb-6 text-[oklch(0.30_0.08_140)]"></i>
+        <h1 class="text-3xl font-bold text-[oklch(0.30_0.08_140)] mb-2 "><%= book.title %></h1>
         <p class="text-gray-600 mb-4">
           by 
           <a href="../authors/<%= book.author_id %>" class="font-semibold text-slate-800">
@@ -37,7 +37,7 @@
         <div class="flex justify-center mb-6">
           <a 
             href="/books/<%= book.id %>/download" 
-            class="inline-flex items-center gap-2 px-6 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors shadow-md hover:shadow-lg"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-[oklch(0.30_0.08_140)] text-white rounded-lg hover:bg-teal-800 transition-colors shadow-md hover:shadow-lg "
           >
             <i data-lucide="download" class="w-5 h-5"></i>
             <span>Download PDF</span>

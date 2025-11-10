@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - Book Store</title>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[oklch(0.97_0.01_70)] text-slate-900 min-h-screen flex flex-col items-center">
+  <!-- Navigation Bar -->
+  <%- include('partials/navbar') %>
+
+  <div class="container mx-auto p-6 w-full max-w-md mt-12">
+    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+      <div class="text-center mb-8">
+        <i data-lucide="user-plus" class="w-16 h-16 mx-auto mb-4 text-[oklch(0.30_0.08_140)] opacity-50"></i>
+        <h1 class="text-3xl font-bold text-[oklch(0.30_0.08_140)] mb-2">Create Account</h1>
+        <p class="text-gray-600">Join our library community</p>
+      </div>
+
+      <form id="registerForm" class="space-y-6">
+        <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+        <div id="successMessage" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"></div>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Username
+          </label>
+          <div class="relative">
+            <i data-lucide="user" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(0.30_0.08_140)] focus:border-transparent outline-none transition"
+              placeholder="Choose a username"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
+          <div class="relative">
+            <i data-lucide="mail" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(0.30_0.08_140)] focus:border-transparent outline-none transition"
+              placeholder="Enter your email"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <div class="relative">
+            <i data-lucide="lock" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(0.30_0.08_140)] focus:border-transparent outline-none transition"
+              placeholder="Create a password"
+            />
+          </div>
+          <div id="passwordFeedback" class="mt-2 text-sm"></div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-[oklch(0.30_0.08_140)] text-white px-6 py-3 rounded-lg shadow hover:bg-teal-700 transition opacity-80 font-semibold text-lg flex items-center justify-center gap-2"
+        >
+          <i data-lucide="user-plus" class="w-5 h-5"></i>
+          Sign Up
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-gray-600">
+          Already have an account?
+          <a href="/auth/login" class="text-[oklch(0.30_0.08_140)] hover:text-teal-700 font-semibold transition">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+
+      const registerForm = document.getElementById("registerForm");
+      const errorMessage = document.getElementById("errorMessage");
+      const successMessage = document.getElementById("successMessage");
+      const passwordInput = document.getElementById("password");
+      const passwordFeedback = document.getElementById("passwordFeedback");
+
+
+
+      // Real-time password validation
+      passwordInput.addEventListener("input", (e) => {
+        const password = e.target.value;
+        
+        if (password.length === 0) {
+          passwordFeedback.textContent = "";
+          passwordFeedback.className = "mt-2 text-sm";
+          return;
+        }
+
+        const errors = validatePassword(password);
+        if (errors.length > 0) {
+          passwordFeedback.textContent = "Password must contain: " + errors.join(", ");
+          passwordFeedback.className = "mt-2 text-sm text-red-600";
+        } else {
+          passwordFeedback.textContent = "✓ Password is strong!";
+          passwordFeedback.className = "mt-2 text-sm text-green-600";
+        }
+      });
+
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Hide previous messages
+        errorMessage.classList.add("hidden");
+        successMessage.classList.add("hidden");
+
+        const formData = {
+          username: document.getElementById("username").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        };
+
+        try {
+          const response = await fetch("/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Registration failed");
+          }
+
+          // Store token in localStorage
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+
+          // Show success message
+          successMessage.textContent = data.message || "Registration successful! Redirecting...";
+          successMessage.classList.remove("hidden");
+
+          // Redirect to books page after a short delay
+          setTimeout(() => {
+            window.location.href = "/books";
+          }, 1000);
+        } catch (error) {
+          errorMessage.textContent = error.message || "An error occurred. Please try again.";
+          errorMessage.classList.remove("hidden");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

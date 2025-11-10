@@ -18,7 +18,9 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const mainRouter = Router();
 
-// ─── AUTH ROUTES (Public) ─────────────────────────────
+// ─── AUTH ROUTES  ─────────────────────────────
+mainRouter.get("/auth/login", authController.renderLogin);
+mainRouter.get("/auth/register", authController.renderRegister);
 mainRouter.post("/auth/register", asyncHandler(authController.register));
 mainRouter.post("/auth/login", asyncHandler(authController.login));
 mainRouter.get("/auth/me", authenticate, asyncHandler(authController.getMe));
@@ -114,7 +116,7 @@ mainRouter.delete(
 mainRouter.post(
   "/books/:book_id/authors/:author_id",
   authenticate,
-  canCreate("books"), // or create a separate permission
+  canCreate("books"),
   asyncHandler(relationsController.addBookAuthor)
 );
 mainRouter.delete(

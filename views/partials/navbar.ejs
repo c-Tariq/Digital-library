@@ -16,8 +16,118 @@
         <a href="/categories" class="text-[oklch(0.30_0.08_140)] hover:text-teal-700 transition flex items-center space-x-1 text-2xl">
           <i data-lucide="folder" class="w-5 h-5"></i><span>Categories</span>
         </a>
-
+        <div class="flex items-center space-x-4" id="auth-buttons">
+          <!-- Login/Register buttons (shown when not logged in) -->
+          <div id="guest-buttons" class="flex items-center space-x-4">
+            <a href="/auth/login" class="text-[oklch(0.30_0.08_140)] hover:text-teal-700 transition flex items-center space-x-1 text-xl">
+              <i data-lucide="log-in" class="w-5 h-5"></i><span>Login</span>
+            </a>
+            <a href="/auth/register" class="bg-[oklch(0.30_0.08_140)] text-white px-4 py-2 rounded-lg shadow hover:bg-teal-700 transition opacity-60 flex items-center space-x-1 text-xl">
+              <i data-lucide="user-plus" class="w-5 h-5"></i><span>Register</span>
+            </a>
+          </div>
+          <!-- User info and logout (shown when logged in) -->
+          <div id="user-buttons" class="hidden items-center space-x-4">
+            <span class="text-[oklch(0.30_0.08_140)] text-xl flex items-center space-x-1">
+              <i data-lucide="user" class="w-5 h-5"></i>
+              <span id="username-display"></span>
+            </span>
+            <button id="logout-btn" class="bg-red-900 text-white px-4 py-2 rounded-lg shadow hover:bg-red-800 transition flex items-center space-x-1 text-xl opacity-50">
+              <i data-lucide="log-out" class="w-5 h-5"></i><span>Logout</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
+  <script>
+    (function() {
+      // Check if user is logged in
+      async function checkAuthStatus() {
+        const token = localStorage.getItem('token');
+        const guestButtons = document.getElementById('guest-buttons');
+        const userButtons = document.getElementById('user-buttons');
+        const usernameDisplay = document.getElementById('username-display');
+        
+        if (token) {
+          try {
+            // Fetch user info
+            const response = await fetch('/auth/me', {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              // Show user buttons, hide guest buttons
+              if (guestButtons) guestButtons.classList.add('hidden');
+              if (userButtons) {
+                userButtons.classList.remove('hidden');
+                userButtons.classList.add('flex');
+                if (usernameDisplay) {
+                  usernameDisplay.textContent = data.user.username;
+                }
+              }
+            } else {
+              // Token is invalid, remove it
+              localStorage.removeItem('token');
+              if (guestButtons) guestButtons.classList.remove('hidden');
+              if (userButtons) {
+                userButtons.classList.add('hidden');
+                userButtons.classList.remove('flex');
+              }
+            }
+          } catch (error) {
+            console.error('Error checking auth status:', error);
+            // On error, show guest buttons
+            if (guestButtons) guestButtons.classList.remove('hidden');
+            if (userButtons) {
+              userButtons.classList.add('hidden');
+              userButtons.classList.remove('flex');
+            }
+          }
+        } else {
+          // No token, show guest buttons
+          if (guestButtons) guestButtons.classList.remove('hidden');
+          if (userButtons) {
+            userButtons.classList.add('hidden');
+            userButtons.classList.remove('flex');
+          }
+        }
+      }
+      
+      // Logout handler
+      function setupLogout() {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/books';
+          });
+        }
+      }
+      
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          checkAuthStatus();
+          setupLogout();
+          // Re-initialize Lucide icons after DOM update
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+        });
+      } else {
+        checkAuthStatus();
+        setupLogout();
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }
+    })();
+  </script>
   
